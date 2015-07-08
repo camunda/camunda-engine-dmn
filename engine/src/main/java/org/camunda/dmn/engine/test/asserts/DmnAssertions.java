@@ -20,8 +20,12 @@ import org.camunda.dmn.engine.DmnEngine;
 
 public class DmnAssertions extends Assertions {
 
+  static ThreadLocal<DmnEngineAssertion> dmnDecisionEngineAssertionThreadLocal = new ThreadLocal<DmnEngineAssertion>();
+
   public static DmnEngineAssertion assertThat(DmnEngine engine) {
-    return new DmnEngineAssertion(engine);
+    final DmnEngineAssertion dmnEngineAssertion = new DmnEngineAssertion(engine);
+    DmnAssertions.dmnDecisionEngineAssertionThreadLocal.set(dmnEngineAssertion);
+    return dmnEngineAssertion;
   }
 
   public static DmnDecisionResultAssertion assertThat(DmnDecisionResult result) {
@@ -29,7 +33,17 @@ public class DmnAssertions extends Assertions {
   }
 
   public static DmnDecisionOutputAssertion assertThat(DmnDecisionOutput output) {
-    return new DmnDecisionOutputAssertion(output);
+    DmnDecisionOutputAssertion dmnDecisionOutputAssertion = new DmnDecisionOutputAssertion(output);
+    return dmnDecisionOutputAssertion;
+  }
+
+  public static DmnEngineAssertion decision() {
+    final DmnEngineAssertion dmnEngineAssertion = DmnAssertions.dmnDecisionEngineAssertionThreadLocal.get();
+    return dmnEngineAssertion;
+  }
+
+  public static void reset() {
+    DmnAssertions.dmnDecisionEngineAssertionThreadLocal.remove();
   }
 
 }

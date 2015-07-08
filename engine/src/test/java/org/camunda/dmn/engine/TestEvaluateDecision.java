@@ -13,83 +13,68 @@
 
 package org.camunda.dmn.engine;
 
-import static org.camunda.dmn.engine.test.asserts.DmnAssertions.assertThat;
+import static org.camunda.dmn.engine.test.asserts.DmnAssertions.decision;
 
 import org.camunda.dmn.engine.test.DecisionResource;
 import org.camunda.dmn.engine.test.DmnDecisionTest;
+import org.camunda.dmn.engine.test.DmnEngineRule;
+import org.camunda.dmn.engine.test.DmnEngineRuleBuilder;
+import org.junit.Rule;
 import org.junit.Test;
 
-public class TestEvaluateDecision extends DmnDecisionTest {
+public class TestEvaluateDecision {
 
+  @Rule
+  public DmnEngineRule rule = new DmnEngineRuleBuilder(this).withAssertions().build();
+  
   @Test
-  @DecisionResource(resource = NO_INPUT_DMN)
+  @DecisionResource(resource = DmnDecisionTest.NO_INPUT_DMN)
   public void shouldEvaluateRuleWithoutInput() {
-    assertThat(engine)
-      .evaluates(decision)
-      .hasResult("ok");
+    decision().hasResult("ok");
   }
 
   @Test
-  @DecisionResource(resource = ONE_RULE_DMN)
+  @DecisionResource(resource = DmnDecisionTest.ONE_RULE_DMN)
   public void shouldEvaluateSingleRule() {
-    assertThat(engine)
-      .evaluates(decision)
-      .withContext("input", "ok")
+    decision()
+      .evaluates("input", "ok")
       .hasResult("ok");
 
-    assertThat(engine)
-      .evaluates(decision)
-      .withContext("input", "ok")
+    decision()
+      .evaluates("input", "ok")
       .hasResult(null, "ok");
 
-    assertThat(engine)
-      .evaluates(decision)
-      .withContext("input", "notok")
+    decision()
+      .evaluates("input", "notok")
       .hasEmptyResult();
   }
 
   @Test
-  @DecisionResource(resource = EXAMPLE_DMN)
+  @DecisionResource(resource = DmnDecisionTest.EXAMPLE_DMN)
   public void shouldEvaluateExample() {
-    assertThat(engine)
-      .evaluates(decision)
-      .withContext()
-        .setVariable("status", "bronze")
-        .setVariable("sum", 200)
-        .build()
+    decision()
+      .evaluates("status", "bronze", "sum", 200)
       .hasResult()
         .hasSingleOutput()
           .hasEntry("result", "notok")
           .hasEntry("reason", "work on your status first, as bronze you're not going to get anything");
 
-    assertThat(engine)
-      .evaluates(decision)
-      .withContext()
-        .setVariable("status", "silver")
-        .setVariable("sum", 200)
-        .build()
+    decision()
+      .evaluates("status", "silver", "sum", 200)
       .hasResult()
         .hasSingleOutput()
           .hasEntry("result", "ok")
           .hasEntry("reason", "you little fish will get what you want");
 
-    assertThat(engine)
-      .evaluates(decision)
-      .withContext()
-        .setVariable("status", "silver")
-        .setVariable("sum", 1200)
-        .build()
+    decision()
+      .evaluates("status", "silver", "sum", 1200)
       .hasResult()
         .hasSingleOutput()
           .hasEntry("result", "notok")
           .hasEntry("reason", "you took too much man, you took too much!");
 
-    assertThat(engine)
-      .evaluates(decision)
-      .withContext()
-        .setVariable("status", "gold")
-        .setVariable("sum", 200)
-        .build()
+    decision()
+      .evaluates("status", "gold", "sum", 200)
       .hasResult()
         .hasSingleOutput()
           .hasEntry("result", "ok")
