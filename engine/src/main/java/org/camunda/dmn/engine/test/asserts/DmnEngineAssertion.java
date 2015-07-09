@@ -83,7 +83,7 @@ public class DmnEngineAssertion extends AbstractAssert<DmnEngineAssertion, DmnEn
     return this;
   }
 
-  public DmnEngineAssertion withContext(String name, Object value, Object... additionalVariablePairs) {
+  public DmnEngineAssertion evaluates(String name, Object value, Object... additionalVariablePairs) {
     isNotNull();
 
     if (additionalVariablePairs.length % 2 != 0) {

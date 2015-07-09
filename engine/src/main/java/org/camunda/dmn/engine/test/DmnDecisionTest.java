@@ -25,7 +25,7 @@ public abstract class DmnDecisionTest {
   public static final String EXAMPLE_DMN = "org/camunda/dmn/engine/Example.dmn";
 
   @Rule
-  public DmnEngineRule dmnEngineRule = new DmnEngineRule();
+  public DmnEngineRule dmnEngineRule = new DmnEngineRuleBuilder(this).build();
 
   public DmnEngine engine;
   public DmnDecision decision;

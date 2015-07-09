@@ -31,8 +31,7 @@ public class DmnDecisionResultAssertion extends AbstractAssert<DmnDecisionResult
     if (actualSize != expectedSize) {
       if (expectedSize == 0) {
         failWithMessage("Expected result have no outputs but has <%s>", actualSize);
-      }
-      else {
+      } else {
         failWithMessage("Expected result to have <%s> outputs but has <%s>", expectedSize, actualSize);
       }
     }
@@ -44,7 +43,6 @@ public class DmnDecisionResultAssertion extends AbstractAssert<DmnDecisionResult
     isNotNull();
     return hasSize(0);
   }
-
 
   public DmnDecisionOutputAssertion hasSingleOutput() {
     isNotNull();
