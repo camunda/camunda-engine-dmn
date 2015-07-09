@@ -13,11 +13,10 @@
 
 package org.camunda.dmn.engine.test;
 
-import org.apache.commons.lang3.builder.Builder;
 import org.camunda.dmn.engine.DmnEngineConfiguration;
 import org.camunda.dmn.engine.impl.DmnEngineConfigurationImpl;
 
-public class DmnEngineRuleBuilder implements Builder<DmnEngineRule> {
+public class DmnEngineRuleBuilder {
 
   private boolean installAssertions;
   private boolean shutdownAssertions;
@@ -88,7 +87,7 @@ public class DmnEngineRuleBuilder implements Builder<DmnEngineRule> {
     return this;
   }
 
-  @Override
+ 
   public DmnEngineRule build() {
     return new DmnEngineRule(configuration, installAssertions, shutdownAssertions);
   }
