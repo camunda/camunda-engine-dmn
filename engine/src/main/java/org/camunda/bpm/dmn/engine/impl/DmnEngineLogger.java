@@ -14,8 +14,11 @@
 package org.camunda.bpm.dmn.engine.impl;
 
 import org.camunda.bpm.dmn.engine.DmnDecision;
+import org.camunda.bpm.dmn.engine.DmnDecisionOutput;
+import org.camunda.bpm.dmn.engine.DmnDecisionResult;
 import org.camunda.bpm.dmn.engine.DmnEngineException;
 import org.camunda.bpm.dmn.engine.DmnExpressionException;
+import org.camunda.bpm.dmn.engine.DmnResultException;
 import org.camunda.bpm.dmn.engine.DmnTransformException;
 import org.camunda.bpm.model.dmn.HitPolicy;
 
@@ -77,13 +80,8 @@ public class DmnEngineLogger extends DmnLogger {
     return new DmnExpressionException(exceptionMessage("014", "Unable to cast result '{}' to expected type", result), cause);
   }
 
-  public DmnExpressionException noScriptEngineFoundForLanguage(String expressionLanguage, String defaultExpressionLanguage) {
-    if (expressionLanguage != null) {
-      return new DmnExpressionException(exceptionMessage("015", "Unable to find script engine for expression language '{}'.", expressionLanguage));
-    }
-    else {
-      return new DmnExpressionException(exceptionMessage("015", "Unable to find script engine for default expression language '{}'.", defaultExpressionLanguage));
-    }
+  public DmnExpressionException noScriptEngineFoundForLanguage(String expressionLanguage) {
+    return new DmnExpressionException(exceptionMessage("015", "Unable to find script engine for expression language '{}'.", expressionLanguage));
   }
 
   public DmnEngineException decisionTypeNotSupported(DmnDecision decision) {
@@ -100,6 +98,14 @@ public class DmnEngineLogger extends DmnLogger {
 
   public void unsupportedTypeDefinitionForClause(String typeName) {
     logWarn("019", "Unsupported type '{}' for clause. Values of this clause will not transform into another type.", typeName);
+  }
+
+  public DmnResultException decisionOutputHasMoreThanOneValue(DmnDecisionOutput dmnDecisionOutput) {
+    return new DmnResultException(exceptionMessage("020", "Unable to get single decision output value as it has more than one value '{}'", dmnDecisionOutput));
+  }
+
+  public DmnResultException decisionResultHasMoreThanOneOutput(DmnDecisionResult dmnDecisionResult) {
+    return new DmnResultException(exceptionMessage("021", "Unable to get single decision output as it has more than one output '{}'", dmnDecisionResult));
   }
 
 }

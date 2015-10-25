@@ -20,7 +20,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.camunda.bpm.dmn.engine.test.DmnDecisionTest;
-import org.camunda.bpm.dmn.engine.test.DmnEngineRule;
 import org.camunda.bpm.engine.variable.Variables;
 import org.camunda.bpm.engine.variable.value.TypedValue;
 import org.junit.Before;
@@ -36,16 +35,13 @@ import org.junit.rules.ExpectedException;
 public class DataTypeTransformerTest extends DmnDecisionTest {
 
   @Rule
-  public DmnEngineRule dmnEngineRule = new DmnEngineRule();
-
-  @Rule
   public ExpectedException thrown = ExpectedException.none();
 
   protected DataTypeTransformerFactory factory;
 
   @Before
   public void setup() {
-    factory = dmnEngineRule.getEngine().getConfiguration().getDataTypeTransformerFactory();
+    factory = engine.getConfiguration().getDataTypeTransformerFactory();
   }
 
   @Test
@@ -196,7 +192,7 @@ public class DataTypeTransformerTest extends DmnDecisionTest {
     assertThat(typeTransformer.transform(Double.MIN_VALUE), is((TypedValue) Variables.doubleValue(Double.MIN_VALUE)));
     assertThat(typeTransformer.transform(Double.MAX_VALUE), is((TypedValue) Variables.doubleValue(Double.MAX_VALUE)));
     assertThat(typeTransformer.transform(-Double.MAX_VALUE), is((TypedValue) Variables.doubleValue(-Double.MAX_VALUE)));
-    assertThat(typeTransformer.transform(Long.MAX_VALUE), is((TypedValue) Variables.doubleValue(Double.valueOf(Long.MAX_VALUE))));
+    assertThat(typeTransformer.transform(Long.MAX_VALUE), is((TypedValue) Variables.doubleValue((double) Long.MAX_VALUE)));
   }
 
   @Test
@@ -209,8 +205,8 @@ public class DataTypeTransformerTest extends DmnDecisionTest {
   }
 
   @Test
-  public void dateTimeType() throws ParseException {
-    DataTypeTransformer typeTransformer = factory.getTransformerForType("date and time");
+  public void dateType() throws ParseException {
+    DataTypeTransformer typeTransformer = factory.getTransformerForType("date");
 
     Date date = toDate("2015-09-18T12:00:00");
     TypedValue dateValue = Variables.dateValue(date);
@@ -220,97 +216,12 @@ public class DataTypeTransformerTest extends DmnDecisionTest {
   }
 
   @Test
-  public void invalidStringForDateTimeType() {
-    DataTypeTransformer typeTransformer = factory.getTransformerForType("date and time");
+  public void invalidStringForDateType() {
+    DataTypeTransformer typeTransformer = factory.getTransformerForType("date");
 
     thrown.expect(IllegalArgumentException.class);
 
     typeTransformer.transform("18.09.2015 12:00:00");
-  }
-
-  @Test
-  public void localDateType() throws ParseException {
-    DataTypeTransformer typeTransformer = factory.getTransformerForType("date");
-
-    TypedValue localDateValue = Variables.localDateValue("2015-09-18");
-
-    assertThat(typeTransformer.transform("2015-09-18"), is(localDateValue));
-
-    assertThat(typeTransformer.transform(toDate("2015-09-18T00:00:00")), is(localDateValue));
-    assertThat(typeTransformer.transform(toDate("2015-09-18T12:00:00")), is(localDateValue));
-  }
-
-  @Test
-  public void invalidStringForLocalDateType() {
-    DataTypeTransformer typeTransformer = factory.getTransformerForType("date");
-
-    thrown.expect(IllegalArgumentException.class);
-
-    typeTransformer.transform("18.09.2015");
-  }
-
-  @Test
-  public void localTimeType() throws ParseException {
-    DataTypeTransformer typeTransformer = factory.getTransformerForType("time");
-
-    TypedValue localTimeValue = Variables.localTimeValue("12:00:00");
-
-    assertThat(typeTransformer.transform("12:00:00"), is(localTimeValue));
-
-    assertThat(typeTransformer.transform(toDate("2015-09-17T12:00:00")), is(localTimeValue));
-    assertThat(typeTransformer.transform(toDate("2015-09-18T12:00:00")), is(localTimeValue));
-  }
-
-  @Test
-  public void invalidStringForLocalTimeType() {
-    DataTypeTransformer typeTransformer = factory.getTransformerForType("time");
-
-    thrown.expect(IllegalArgumentException.class);
-
-    typeTransformer.transform("12:00 am");
-  }
-
-  @Test
-  public void durationType() throws ParseException {
-    DataTypeTransformer typeTransformer = factory.getTransformerForType("duration");
-
-    assertThat(typeTransformer.transform("P1Y"), is((TypedValue) Variables.periodValue("P1Y")));
-    assertThat(typeTransformer.transform("P2M"), is((TypedValue) Variables.periodValue("P2M")));
-    assertThat(typeTransformer.transform("P1Y6M"), is((TypedValue) Variables.periodValue("P1Y6M")));
-
-    assertThat(typeTransformer.transform("P14D"), is((TypedValue) Variables.periodValue("P14D")));
-    assertThat(typeTransformer.transform("PT8H"), is((TypedValue) Variables.periodValue("PT8H")));
-    assertThat(typeTransformer.transform("PT30M"), is((TypedValue) Variables.periodValue("PT30M")));
-    assertThat(typeTransformer.transform("PT20S"), is((TypedValue) Variables.periodValue("PT20S")));
-    assertThat(typeTransformer.transform("P1DT12H"), is((TypedValue) Variables.periodValue("P1DT12H")));
-    assertThat(typeTransformer.transform("PT6H30M"), is((TypedValue) Variables.periodValue("PT6H30M")));
-  }
-
-  @Test
-  public void invalidStringMissingPrefixForDurationType() {
-    DataTypeTransformer typeTransformer = factory.getTransformerForType("duration");
-
-    thrown.expect(IllegalArgumentException.class);
-
-    typeTransformer.transform("6M");
-  }
-
-  @Test
-  public void invalidStringMissingTimeSeparatorForDurationType() {
-    DataTypeTransformer typeTransformer = factory.getTransformerForType("duration");
-
-    thrown.expect(IllegalArgumentException.class);
-
-    typeTransformer.transform("P4H");
-  }
-
-  @Test
-  public void invalidStringMissingValuesForDurationType() {
-    DataTypeTransformer typeTransformer = factory.getTransformerForType("duration");
-
-    thrown.expect(IllegalArgumentException.class);
-
-    typeTransformer.transform("PT");
   }
 
   protected Date toDate(String date) throws ParseException {

@@ -27,6 +27,18 @@
 
       <dependency>
         <groupId>org.camunda.bpm.dmn</groupId>
+        <artifactId>camunda-engine-feel-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.camunda.bpm.dmn</groupId>
+        <artifactId>camunda-engine-feel-juel</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.camunda.bpm.dmn</groupId>
         <artifactId>camunda-scriptengine-dmn</artifactId>
         <version>${project.version}</version>
       </dependency>
