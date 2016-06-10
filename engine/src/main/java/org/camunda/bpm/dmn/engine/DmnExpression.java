@@ -13,6 +13,13 @@
 
 package org.camunda.bpm.dmn.engine;
 
+/**
+ * A value expression, in a designated expression or script language, that is part of a decision yielding a single value.
+ *
+ * <p>
+ * The evaluation of an expression can have side effects, if the underlying expression/script alters (part of) the context's data.
+ * </p>
+ */
 public interface DmnExpression {
 
   /**
