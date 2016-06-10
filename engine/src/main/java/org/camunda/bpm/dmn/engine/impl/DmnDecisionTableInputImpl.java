@@ -13,7 +13,9 @@
 
 package org.camunda.bpm.dmn.engine.impl;
 
-public class DmnDecisionTableInputImpl {
+import org.camunda.bpm.dmn.engine.DmnDecisionTableInput;
+
+public class DmnDecisionTableInputImpl implements DmnDecisionTableInput {
 
   public static final String DEFAULT_INPUT_VARIABLE_NAME = "cellInput";
 
