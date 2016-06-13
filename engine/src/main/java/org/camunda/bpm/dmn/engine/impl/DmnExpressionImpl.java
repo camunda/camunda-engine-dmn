@@ -13,9 +13,10 @@
 
 package org.camunda.bpm.dmn.engine.impl;
 
+import org.camunda.bpm.dmn.engine.DmnExpression;
 import org.camunda.bpm.dmn.engine.impl.spi.type.DmnTypeDefinition;
 
-public class DmnExpressionImpl {
+public class DmnExpressionImpl implements DmnExpression {
 
   protected String id;
   protected String name;
@@ -46,6 +47,13 @@ public class DmnExpressionImpl {
 
   public void setTypeDefinition(DmnTypeDefinition typeDefinition) {
     this.typeDefinition = typeDefinition;
+  }
+
+  public String getTypeName() {
+    if (typeDefinition == null) {
+      return null;
+    }
+    return typeDefinition.getTypeName();
   }
 
   public String getExpressionLanguage() {

@@ -13,9 +13,10 @@
 
 package org.camunda.bpm.dmn.engine.impl;
 
+import org.camunda.bpm.dmn.engine.DmnDecisionTableOutput;
 import org.camunda.bpm.dmn.engine.impl.spi.type.DmnTypeDefinition;
 
-public class DmnDecisionTableOutputImpl {
+public class DmnDecisionTableOutputImpl implements DmnDecisionTableOutput {
 
   protected String id;
   protected String name;
@@ -52,6 +53,13 @@ public class DmnDecisionTableOutputImpl {
 
   public void setTypeDefinition(DmnTypeDefinition typeDefinition) {
     this.typeDefinition = typeDefinition;
+  }
+
+  public String getTypeName() {
+    if (typeDefinition == null) {
+      return null;
+    }
+    return typeDefinition.getTypeName();
   }
 
   @Override

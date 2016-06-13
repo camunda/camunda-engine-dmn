@@ -16,10 +16,10 @@ package org.camunda.bpm.dmn.engine.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.camunda.bpm.dmn.engine.DmnDecision;
+import org.camunda.bpm.dmn.engine.DmnDecisionTable;
 import org.camunda.bpm.dmn.engine.impl.spi.hitpolicy.DmnHitPolicyHandler;
 
-public class DmnDecisionTableImpl implements DmnDecision {
+public class DmnDecisionTableImpl implements DmnDecisionTable {
 
   protected String key;
   protected String name;

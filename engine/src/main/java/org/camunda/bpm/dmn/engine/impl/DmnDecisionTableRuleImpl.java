@@ -16,7 +16,9 @@ package org.camunda.bpm.dmn.engine.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DmnDecisionTableRuleImpl {
+import org.camunda.bpm.dmn.engine.DmnDecisionTableRule;
+
+public class DmnDecisionTableRuleImpl implements DmnDecisionTableRule {
 
   public String id;
   public String name;
