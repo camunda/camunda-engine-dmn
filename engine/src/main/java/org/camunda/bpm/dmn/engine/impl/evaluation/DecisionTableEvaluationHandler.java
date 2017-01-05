@@ -167,8 +167,8 @@ public class DecisionTableEvaluationHandler implements DmnDecisionLogicEvaluatio
 
       return CompositeVariableContext.compose(
         Variables.createVariables()
-            .putValueTyped(inputVariableName, evaluatedInput.getValue())
             .putValue("inputVariableName", inputVariableName)
+            .putValueTyped(inputVariableName, evaluatedInput.getValue())
             .asVariableContext(),
         variableContext
       );

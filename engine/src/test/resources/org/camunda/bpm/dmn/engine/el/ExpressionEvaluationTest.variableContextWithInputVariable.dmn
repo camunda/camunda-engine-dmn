@@ -8,7 +8,7 @@
       </input>
       <output id="output1" label="out" name="out" typeRef="boolean" />
       <rule id="row-914871961-1">
-        <inputEntry id="UnaryTests_1lhqhwf" expressionLanguage="juel">        <text><![CDATA[${inputVariableName == "foo" && foo == 2}]]></text>
+        <inputEntry id="UnaryTests_1lhqhwf" expressionLanguage="juel">        <text><![CDATA[${variableContext.resolve('inputVariableName').getValue() == 'foo' && variableContext.resolve('foo').getValue() == 3}]]></text>
 </inputEntry>
         <outputEntry id="LiteralExpression_0t3v7ny">        <text>true</text>
 </outputEntry>

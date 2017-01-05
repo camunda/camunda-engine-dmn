@@ -23,7 +23,9 @@ import org.junit.Test;
 public class ExpressionEvaluationTest extends DmnEngineTest {
 
     protected static final String DMN_INPUT_VARIABLE = "org/camunda/bpm/dmn/engine/el/ExpressionEvaluationTest.inputVariableName.dmn";
+    protected static final String DMN_OVERRIDE_INPUT_VARIABLE = "org/camunda/bpm/dmn/engine/el/ExpressionEvaluationTest.overrideInputVariableName.dmn";
     protected static final String DMN_VARIABLE_CONTEXT = "org/camunda/bpm/dmn/engine/el/ExpressionEvaluationTest.variableContext.dmn";
+    protected static final String DMN_VARIABLE_CONTEXT_WITH_INPUT_VARIABLE = "org/camunda/bpm/dmn/engine/el/ExpressionEvaluationTest.variableContextWithInputVariable.dmn";
 
     @Test
     @DecisionResource(resource = DMN_INPUT_VARIABLE)
@@ -34,8 +36,24 @@ public class ExpressionEvaluationTest extends DmnEngineTest {
     }
 
     @Test
+    @DecisionResource(resource = DMN_OVERRIDE_INPUT_VARIABLE)
+    public void testOverrideInputVariableName() {
+      DmnDecisionResult decisionResult = dmnEngine.evaluateDecision(decision, Variables.createVariables().putValue("in", 2));
+
+      assertThat(decisionResult.getSingleEntry()).isEqualTo(true);
+    }
+
+    @Test
     @DecisionResource(resource = DMN_VARIABLE_CONTEXT)
     public void testHasVariableContext() {
+      DmnDecisionResult decisionResult = dmnEngine.evaluateDecision(decision, Variables.createVariables().putValue("in", 3));
+
+      assertThat(decisionResult.getSingleEntry()).isEqualTo(true);
+    }
+
+    @Test
+    @DecisionResource(resource = DMN_VARIABLE_CONTEXT_WITH_INPUT_VARIABLE)
+    public void testHasInputVariableNameInVariableContext() {
       DmnDecisionResult decisionResult = dmnEngine.evaluateDecision(decision, Variables.createVariables().putValue("in", 3));
 
       assertThat(decisionResult.getSingleEntry()).isEqualTo(true);
