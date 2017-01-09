@@ -19,17 +19,30 @@ import javax.el.ExpressionFactory;
 import javax.el.FunctionMapper;
 import javax.el.VariableMapper;
 
+import org.camunda.bpm.dmn.feel.impl.juel.FeelEngineLogger;
+import org.camunda.bpm.dmn.feel.impl.juel.FeelLogger;
 import org.camunda.bpm.engine.variable.context.VariableContext;
 
 import de.odysseus.el.util.SimpleResolver;
 
 public class FeelElContextFactory implements ElContextFactory {
 
+  private static Class<? extends FeelElContext> FEEL_EL_CONTEXT_CLASS = FeelElContext.class;
+  public static final FeelEngineLogger LOG = FeelLogger.ENGINE_LOGGER;
+
   public ELContext createContext(ExpressionFactory expressionFactory, VariableContext variableContext) {
+    ELContext returnContext;
     ELResolver elResolver = createElResolver();
     FunctionMapper functionMapper = createFunctionMapper();
     VariableMapper variableMapper = createVariableMapper(expressionFactory, variableContext);
-    return new FeelElContext(elResolver, functionMapper, variableMapper);
+
+    try {
+      returnContext = (ELContext) FEEL_EL_CONTEXT_CLASS.getConstructors()[0].newInstance(elResolver, functionMapper, variableMapper);
+    } catch (Exception ex) {
+      throw LOG.unableToInitializeFeelEngineContext(ex);
+    }
+
+    return returnContext;
   }
 
   public ELResolver createElResolver() {
@@ -44,6 +57,19 @@ public class FeelElContextFactory implements ElContextFactory {
 
   public VariableMapper createVariableMapper(ExpressionFactory expressionFactory, VariableContext variableContext) {
     return new FeelTypedVariableMapper(expressionFactory, variableContext);
+  }
+
+  /**
+   * Sets a new "custom" ELContext Class.
+   * This new custom ELContext can be modified to support custom JUEL Methods for instance.
+   * @param elContextClassName The name of the custom class
+   * @throws ClassNotFoundException if the class can not be found
+     */
+  public static void setFeelElContextClass(final String elContextClassName) throws ClassNotFoundException {
+    final Class elContextClass = Class.forName(elContextClassName);
+    if (elContextClass.isAssignableFrom(FeelElContext.class)) {
+      FEEL_EL_CONTEXT_CLASS = elContextClass;
+    }
   }
 
 }
