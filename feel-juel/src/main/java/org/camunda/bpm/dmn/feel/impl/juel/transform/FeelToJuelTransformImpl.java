@@ -13,6 +13,10 @@
 
 package org.camunda.bpm.dmn.feel.impl.juel.transform;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class FeelToJuelTransformImpl implements FeelToJuelTransform {
 
   public static final FeelToJuelTransformer NOT_TRANSFORMER = new NotTransformer();
@@ -22,6 +26,9 @@ public class FeelToJuelTransformImpl implements FeelToJuelTransform {
   public static final FeelToJuelTransformer COMPARISON_TRANSFORMER = new ComparisonTransformer();
   public static final FeelToJuelTransformer EQUAL_TRANSFORMER = new EqualTransformer();
   public static final FeelToJuelTransformer ENDPOINT_TRANSFORMER = new EndpointTransformer();
+  public static final List<FeelToJuelTransformer> FUNCTION_TRANSFORMERS = new ArrayList<FeelToJuelTransformer>(
+    Arrays.asList(new StartsWithFunctionTransformer())
+  );
 
   public String transformSimpleUnaryTests(String simpleUnaryTests, String inputName) {
     simpleUnaryTests = simpleUnaryTests.trim();
@@ -41,6 +48,11 @@ public class FeelToJuelTransformImpl implements FeelToJuelTransform {
 
   public String transformSimplePositiveUnaryTests(String simplePositiveUnaryTests, String inputName) {
     simplePositiveUnaryTests = simplePositiveUnaryTests.trim();
+    for (FeelToJuelTransformer functionTransformer : FUNCTION_TRANSFORMERS) {
+      if (functionTransformer.canTransform(simplePositiveUnaryTests)) {
+        return functionTransformer.transform(this, simplePositiveUnaryTests, inputName);
+      }
+    }
     if (LIST_TRANSFORMER.canTransform(simplePositiveUnaryTests)) {
       return LIST_TRANSFORMER.transform(this, simplePositiveUnaryTests, inputName);
     }
@@ -65,6 +77,14 @@ public class FeelToJuelTransformImpl implements FeelToJuelTransform {
   public String transformEndpoint(String endpoint, String inputName) {
     endpoint = endpoint.trim();
     return ENDPOINT_TRANSFORMER.transform(this, endpoint, inputName);
+  }
+
+  /**
+   * Add a new FellToJuelTransformer for implementing custom evaluation methods.
+   * @param feelToJuelTransformer
+     */
+  public static void addFunctionTransfomer(FeelToJuelTransformer feelToJuelTransformer) {
+    FUNCTION_TRANSFORMERS.add(feelToJuelTransformer);
   }
 
 }
