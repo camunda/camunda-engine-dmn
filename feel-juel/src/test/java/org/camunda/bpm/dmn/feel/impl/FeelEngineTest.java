@@ -392,6 +392,16 @@ public class FeelEngineTest {
     assertEvaluatesToTrue(12, "<= pojo.bar");
     assertEvaluatesToFalse(13.33, ">= pojo.bar");
   }
+  
+   @Test
+  public void testStringStartsWith() {
+    assertEvaluatesToTrue("foobar", "starts with(\"foo\")");
+    assertEvaluatesToFalse("foobar", "starts with(\"foa\")");
+    assertEvaluatesToFalse("foobar", "starts with(\"afoo\")");
+    assertEvaluatesToTrue("foobar", "starts with(\"foobar\")");
+    assertEvaluatesToFalse("", "starts with(\"foobar\")");
+    assertEvaluatesToFalse(null, "starts with(\"foobar\")");
+  }
 
   public void assertEvaluatesToTrue(Object input, String feelExpression) {
     boolean result = evaluateFeel(input, feelExpression);
