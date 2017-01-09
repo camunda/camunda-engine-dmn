@@ -30,11 +30,13 @@ public class FeelFunctionMapper extends FunctionMapper {
 
   protected static final SimpleDateFormat FEEL_DATE_AND_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
   public static final String JUEL_DATE_AND_TIME_METHOD = "dateAndTime";
+  public static final String JUEL_STARTS_WITH = "startsWith";
 
   protected static final Map<String, Method> methods = new HashMap<String, Method>();
 
   static {
     methods.put(JUEL_DATE_AND_TIME_METHOD, getMethod("parseDateAndTime", String.class));
+    methods.put(JUEL_STARTS_WITH, getMethod("startsWith", String.class, String.class));
   }
 
   public Method resolveFunction(String prefix, String localName) {
@@ -56,6 +58,17 @@ public class FeelFunctionMapper extends FunctionMapper {
     } catch (ParseException e) {
       throw LOG.invalidDateAndTimeFormat(dateAndTimeString, e);
     }
+  }
+
+  public static void addMethod(final String name, final Method method) {
+    methods.put(name, method);
+  }
+
+  public static boolean startsWith(final String input, final String match) {
+    if (input != null) {
+      return input.startsWith(match);
+    }
+    return false;
   }
 
 }
