@@ -13,12 +13,17 @@
 
 package org.camunda.bpm.dmn.feel.impl.juel.el;
 
-import javax.el.ELContext;
+import de.odysseus.el.util.SimpleContext;
+import org.camunda.bpm.dmn.feel.impl.juel.FeelEngineLogger;
+import org.camunda.bpm.dmn.feel.impl.juel.FeelLogger;
+
 import javax.el.ELResolver;
 import javax.el.FunctionMapper;
 import javax.el.VariableMapper;
 
-public class FeelElContext extends ELContext {
+public class FeelElContext extends SimpleContext {
+
+  public static final FeelEngineLogger LOG = FeelLogger.ENGINE_LOGGER;
 
   protected ELResolver elResolver;
   protected FunctionMapper functionMapper;
@@ -28,6 +33,8 @@ public class FeelElContext extends ELContext {
     this.elResolver = elResolver;
     this.functionMapper = functionMapper;
     this.variableMapper = variableMapper;
+
+    initializeJUELFunctions();
   }
 
   public ELResolver getELResolver() {
@@ -40,6 +47,17 @@ public class FeelElContext extends ELContext {
 
   public VariableMapper getVariableMapper() {
     return variableMapper;
+  }
+
+  /**
+   * Initializes any custom JUEL functions
+   */
+  protected void initializeJUELFunctions() {
+    try {
+      this.setFunction("", "startsWith", FeelFunctionMapper.class.getMethod("startsWith", String.class, String.class));
+    } catch (NoSuchMethodException ex) {
+      throw LOG.unableToFindMethod(ex, "startsWith", String.class, String.class);
+    }
   }
 
 }
