@@ -58,4 +58,13 @@ public class FeelFunctionMapper extends FunctionMapper {
     }
   }
 
+  public static void addMethod(final Method method) {
+    addMethod(method.getName(), method);
+  }
+
+
+  public static void addMethod(final String name, final Method method) {
+    methods.put(name, method);
+  }
+
 }

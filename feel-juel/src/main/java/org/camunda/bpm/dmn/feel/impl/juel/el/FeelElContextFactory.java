@@ -19,17 +19,45 @@ import javax.el.ExpressionFactory;
 import javax.el.FunctionMapper;
 import javax.el.VariableMapper;
 
+import org.camunda.bpm.dmn.feel.impl.juel.FeelEngineLogger;
+import org.camunda.bpm.dmn.feel.impl.juel.FeelLogger;
 import org.camunda.bpm.engine.variable.context.VariableContext;
 
 import de.odysseus.el.util.SimpleResolver;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+
 public class FeelElContextFactory implements ElContextFactory {
+
+  public static final FeelEngineLogger LOG = FeelLogger.ENGINE_LOGGER;
+
+  private static List<FunctionHolder> functionHolderList = new ArrayList<FunctionHolder>();
+
+  static class FunctionHolder {
+    private String prefix;
+    private String localName;
+    private Method method;
+
+    public FunctionHolder(String prefix, String localName, Method method) {
+      this.prefix = prefix;
+      this.localName = localName;
+      this.method = method;
+    }
+  }
 
   public ELContext createContext(ExpressionFactory expressionFactory, VariableContext variableContext) {
     ELResolver elResolver = createElResolver();
     FunctionMapper functionMapper = createFunctionMapper();
     VariableMapper variableMapper = createVariableMapper(expressionFactory, variableContext);
-    return new FeelElContext(elResolver, functionMapper, variableMapper);
+
+    FeelElContext returnContext = new FeelElContext(elResolver, functionMapper, variableMapper);
+    for (FunctionHolder holder : functionHolderList) {
+      returnContext.setFunction(holder.prefix, holder.localName, holder.method);
+    }
+
+    return returnContext;
   }
 
   public ELResolver createElResolver() {
@@ -44,6 +72,10 @@ public class FeelElContextFactory implements ElContextFactory {
 
   public VariableMapper createVariableMapper(ExpressionFactory expressionFactory, VariableContext variableContext) {
     return new FeelTypedVariableMapper(expressionFactory, variableContext);
+  }
+
+  public void addCustomFunction(String prefix, String localName, Method method) {
+    functionHolderList.add(new FunctionHolder(prefix, localName, method));
   }
 
 }

@@ -15,6 +15,8 @@ package org.camunda.bpm.dmn.feel.impl;
 
 import org.camunda.bpm.engine.variable.context.VariableContext;
 
+import java.lang.reflect.Method;
+
 /**
  * Engine to evaluate FEEL expressions.
  */
@@ -45,5 +47,20 @@ public interface FeelEngine {
    *           if the expression cannot be evaluated
    */
   boolean evaluateSimpleUnaryTests(String simpleUnaryTests, String inputName, VariableContext variableContext);
+
+  /**
+   * Add custom FEEL functions to the FEEL engine
+   * @param localName the localName of the method - i.e. startsWith
+   * @param method the method to execute when the prefix:localname is called from the DMN engine.
+   */
+  void addCustomFunction(String localName, Method method);
+
+  /**
+   * Add custom FEEL functions to the FEEL engine
+   * @param prefix the prefix of the method i.e.
+   * @param localName the localName of the method - i.e. startsWith
+   * @param method the method to execute when the prefix:localname is called from the DMN engine.
+   */
+  void addCustomFunction(String prefix, String localName, Method method);
 
 }

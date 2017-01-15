@@ -13,7 +13,17 @@
 
 package org.camunda.bpm.dmn.feel.impl.juel.transform;
 
+import org.camunda.bpm.dmn.feel.impl.juel.FeelEngineLogger;
+import org.camunda.bpm.dmn.feel.impl.juel.FeelLogger;
+import org.reflections.Reflections;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 public class FeelToJuelTransformImpl implements FeelToJuelTransform {
+
+  public static final FeelEngineLogger LOG = FeelLogger.ENGINE_LOGGER;
 
   public static final FeelToJuelTransformer NOT_TRANSFORMER = new NotTransformer();
   public static final FeelToJuelTransformer HYPHEN_TRANSFORMER = new HyphenTransformer();
@@ -22,6 +32,26 @@ public class FeelToJuelTransformImpl implements FeelToJuelTransform {
   public static final FeelToJuelTransformer COMPARISON_TRANSFORMER = new ComparisonTransformer();
   public static final FeelToJuelTransformer EQUAL_TRANSFORMER = new EqualTransformer();
   public static final FeelToJuelTransformer ENDPOINT_TRANSFORMER = new EndpointTransformer();
+  public static final List<FeelToJuelTransformer> FUNCTION_TRANSFORMERS = new ArrayList<FeelToJuelTransformer>();
+
+  public FeelToJuelTransformImpl() {
+    super();
+
+    //Get all annotated Function Transformers via Annotation
+    Reflections reflections = new Reflections();
+    Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(FeelFunctionTransformer.class);
+
+    for (Class transformerClass : annotated) {
+      try {
+        Object object = transformerClass.getConstructors()[0].newInstance();
+        if (object instanceof FeelToJuelTransformer){
+          FUNCTION_TRANSFORMERS.add((FeelToJuelTransformer) object);
+        }
+      } catch (Exception ex) {
+        throw LOG.unknownException(ex);
+      }
+    }
+  }
 
   public String transformSimpleUnaryTests(String simpleUnaryTests, String inputName) {
     simpleUnaryTests = simpleUnaryTests.trim();
@@ -50,7 +80,11 @@ public class FeelToJuelTransformImpl implements FeelToJuelTransform {
   }
 
   public String transformSimplePositiveUnaryTest(String simplePositiveUnaryTest, String inputName) {
-    simplePositiveUnaryTest = simplePositiveUnaryTest.trim();
+    for (FeelToJuelTransformer functionTransformer : FUNCTION_TRANSFORMERS) {
+      if (functionTransformer.canTransform(simplePositiveUnaryTest)) {
+        return functionTransformer.transform(this, simplePositiveUnaryTest, inputName);
+      }
+    }
     if (INTERVAL_TRANSFORMER.canTransform(simplePositiveUnaryTest)) {
       return INTERVAL_TRANSFORMER.transform(this, simplePositiveUnaryTest, inputName);
     }

@@ -13,12 +13,13 @@
 
 package org.camunda.bpm.dmn.feel.impl.juel.el;
 
-import javax.el.ELContext;
+import de.odysseus.el.util.SimpleContext;
+
 import javax.el.ELResolver;
 import javax.el.FunctionMapper;
 import javax.el.VariableMapper;
 
-public class FeelElContext extends ELContext {
+public class FeelElContext extends SimpleContext {
 
   protected ELResolver elResolver;
   protected FunctionMapper functionMapper;
