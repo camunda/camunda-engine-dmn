@@ -11,9 +11,10 @@
  * limitations under the License.
  */
 
-package org.camunda.bpm.dmn.feel.impl;
+package org.camunda.bpm.dmn.engine.el;
 
 import org.camunda.bpm.dmn.feel.impl.juel.FeelEngineFactoryImpl;
+import org.camunda.bpm.dmn.feel.impl.juel.FeelEngineImpl;
 import org.camunda.bpm.engine.variable.VariableMap;
 import org.camunda.bpm.engine.variable.Variables;
 import org.custom.EndsWithFunctionTransformer;
@@ -30,20 +31,21 @@ public class FeelEngineCustomFunctionTest {
 
   public static final String INPUT_VARIABLE = "input";
 
-  public static FeelEngine feelEngine;
+  public static FeelEngineImpl feelEngine;
 
   public VariableMap variables;
 
   @BeforeClass
   public static void initFeelEngine() throws Exception {
-    feelEngine = new FeelEngineFactoryImpl().createInstance();
+
+    feelEngine = (FeelEngineImpl) new FeelEngineFactoryImpl().createInstance();
 
     // ADD CUSTOM FUNCTIONs to engine
     Method startsWithMethod = StartsWithFunctionTransformer.class.getMethod("startsWith", String.class, String.class);
     Method endsWithMethod = EndsWithFunctionTransformer.class.getMethod("endsWith", String.class, String.class);
 
-    feelEngine.addCustomFunction("", "startsWith", startsWithMethod);
-    feelEngine.addCustomFunction("endsWith", endsWithMethod);
+    feelEngine.addCustomFunction("", "startsWith", startsWithMethod , new StartsWithFunctionTransformer());
+    feelEngine.addCustomFunction("endsWith", endsWithMethod, new EndsWithFunctionTransformer());
   }
 
   @Before
