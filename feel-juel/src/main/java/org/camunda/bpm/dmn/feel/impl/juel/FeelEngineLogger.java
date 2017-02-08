@@ -191,4 +191,20 @@ public class FeelEngineLogger extends FeelLogger {
     return syntaxException("020", feelExpression, description);
   }
 
+  public FeelException unableToInitializeFeelEngineContext(Throwable cause) {
+    return new FeelException(exceptionMessage(
+      "021",
+      "Unable to initialize FEEL engine context"),
+      cause
+    );
+  }
+
+  public FeelException unknownException(Throwable cause) {
+    return new FeelException(exceptionMessage(
+      "022",
+      "Unknown Exception:"),
+      cause
+    );
+  }
+
 }

@@ -13,6 +13,8 @@
 
 package org.camunda.bpm.dmn.feel.impl.juel;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import javax.el.ELException;
@@ -22,7 +24,9 @@ import org.camunda.bpm.dmn.feel.impl.FeelEngine;
 import org.camunda.bpm.dmn.feel.impl.FeelEngineFactory;
 import org.camunda.bpm.dmn.feel.impl.juel.el.ElContextFactory;
 import org.camunda.bpm.dmn.feel.impl.juel.el.FeelElContextFactory;
+import org.camunda.bpm.dmn.feel.impl.juel.el.FeelFunctionMapper;
 import org.camunda.bpm.dmn.feel.impl.juel.el.FeelTypeConverter;
+import org.camunda.bpm.dmn.feel.impl.juel.transform.FeelToJuelFunctionTransformer;
 import org.camunda.bpm.dmn.feel.impl.juel.transform.FeelToJuelTransform;
 import org.camunda.bpm.dmn.feel.impl.juel.transform.FeelToJuelTransformImpl;
 import org.camunda.commons.utils.cache.Cache;
@@ -63,7 +67,13 @@ public class FeelEngineFactoryImpl implements FeelEngineFactory {
   }
 
   protected FeelToJuelTransform createFeelToJuelTransform() {
-    return new FeelToJuelTransformImpl();
+    FeelToJuelTransformImpl transformer = new FeelToJuelTransformImpl();
+
+    for (FeelToJuelFunctionTransformer functionTransformer : getFunctionTransformers()) {
+      transformer.addFunctionTransformer(functionTransformer);
+    }
+
+    return transformer;
   }
 
   protected ExpressionFactory createExpressionFactory() {
@@ -83,11 +93,24 @@ public class FeelEngineFactoryImpl implements FeelEngineFactory {
   }
 
   protected ElContextFactory createElContextFactory() {
-    return new FeelElContextFactory();
+    FeelElContextFactory factory = new FeelElContextFactory();
+
+    for (FeelToJuelFunctionTransformer functionTransformer : getFunctionTransformers()) {
+      factory.addCustomFunction(functionTransformer.getPrefix(),
+        functionTransformer.getLocalName(),
+        functionTransformer.getMethod());
+      FeelFunctionMapper.addMethod(functionTransformer.getMethod());
+    }
+
+    return factory;
   }
 
   protected Cache<TransformExpressionCacheKey, String> createTransformExpressionCache() {
     return new ConcurrentLruCache<TransformExpressionCacheKey, String>(expressionCacheSize);
+  }
+
+  protected List<FeelToJuelFunctionTransformer> getFunctionTransformers() {
+    return new ArrayList<FeelToJuelFunctionTransformer>();
   }
 
 }

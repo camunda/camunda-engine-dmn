@@ -18,6 +18,8 @@ import javax.el.ExpressionFactory;
 
 import org.camunda.bpm.engine.variable.context.VariableContext;
 
+import java.lang.reflect.Method;
+
 public interface ElContextFactory {
 
   /**
@@ -28,5 +30,13 @@ public interface ElContextFactory {
    * @return the {@link ELContext} instance
    */
   ELContext createContext(ExpressionFactory expressionFactory, VariableContext variableContext);
+
+  /**
+   *
+   * @param prefix
+   * @param localName
+   * @param method
+     */
+  void addCustomFunction(String prefix, String localName, Method method);
 
 }

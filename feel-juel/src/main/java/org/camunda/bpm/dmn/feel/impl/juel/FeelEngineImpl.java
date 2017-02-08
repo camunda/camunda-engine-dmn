@@ -21,8 +21,12 @@ import javax.el.ValueExpression;
 import org.camunda.bpm.dmn.feel.impl.FeelEngine;
 import org.camunda.bpm.dmn.feel.impl.juel.el.ElContextFactory;
 import org.camunda.bpm.dmn.feel.impl.juel.transform.FeelToJuelTransform;
+import org.camunda.bpm.dmn.feel.impl.juel.el.FeelFunctionMapper;
+import org.camunda.bpm.dmn.feel.impl.juel.transform.FeelToJuelTransformer;
 import org.camunda.bpm.engine.variable.context.VariableContext;
 import org.camunda.commons.utils.cache.Cache;
+
+import java.lang.reflect.Method;
 
 public class FeelEngineImpl implements FeelEngine {
 

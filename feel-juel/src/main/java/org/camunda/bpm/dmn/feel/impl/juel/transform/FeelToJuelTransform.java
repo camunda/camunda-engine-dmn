@@ -51,4 +51,10 @@ public interface FeelToJuelTransform {
    */
   String transformEndpoint(String endpoint, String inputName);
 
+  /**
+   * Add a new FellToJuelTransformer for implementing custom evaluation methods.
+   * @param feelToJuelTransformer The custom
+   */
+  void addFunctionTransformer(FeelToJuelTransformer feelToJuelTransformer);
+
 }
