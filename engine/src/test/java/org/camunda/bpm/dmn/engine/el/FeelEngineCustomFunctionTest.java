@@ -13,17 +13,20 @@
 
 package org.camunda.bpm.dmn.engine.el;
 
+import org.camunda.bpm.dmn.engine.DmnEngine;
+import org.camunda.bpm.dmn.engine.impl.DefaultDmnEngineConfiguration;
+import org.camunda.bpm.dmn.feel.impl.FeelEngine;
 import org.camunda.bpm.dmn.feel.impl.juel.FeelEngineFactoryImpl;
-import org.camunda.bpm.dmn.feel.impl.juel.FeelEngineImpl;
+import org.camunda.bpm.dmn.feel.impl.juel.transform.FeelToJuelFunctionTransformer;
 import org.camunda.bpm.engine.variable.VariableMap;
 import org.camunda.bpm.engine.variable.Variables;
 import org.custom.EndsWithFunctionTransformer;
 import org.custom.StartsWithFunctionTransformer;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,26 +34,17 @@ public class FeelEngineCustomFunctionTest {
 
   public static final String INPUT_VARIABLE = "input";
 
-  public static FeelEngineImpl feelEngine;
+  public static DmnEngine dmnEngine;
+  public static FeelEngine feelEngine;
 
   public VariableMap variables;
 
-  @BeforeClass
-  public static void initFeelEngine() throws Exception {
-
-    feelEngine = (FeelEngineImpl) new FeelEngineFactoryImpl().createInstance();
-
-    // ADD CUSTOM FUNCTIONs to engine
-    Method startsWithMethod = StartsWithFunctionTransformer.class.getMethod("startsWith", String.class, String.class);
-    Method endsWithMethod = EndsWithFunctionTransformer.class.getMethod("endsWith", String.class, String.class);
-
-    feelEngine.addCustomFunction("", "startsWith", startsWithMethod , new StartsWithFunctionTransformer());
-    feelEngine.addCustomFunction("endsWith", endsWithMethod, new EndsWithFunctionTransformer());
-  }
-
   @Before
-  public void initVariables() {
+  public void initEngine() {
     variables = Variables.createVariables();
+    DefaultDmnEngineConfiguration configuration = new DefaultDmnEngineConfiguration();
+    configuration.setFeelEngineFactory(new TestFeelEngineFactory());
+    dmnEngine = configuration.buildEngine();
   }
 
   @Test
@@ -88,4 +82,25 @@ public class FeelEngineCustomFunctionTest {
     return feelEngine.evaluateSimpleUnaryTests(feelExpression, INPUT_VARIABLE, variables.asVariableContext());
   }
 
+  /**
+   * The custom Test Feel Engine Factory
+   * which needs to be created in order to hook custom functions into the DMN FEEL Engine.
+   */
+  public class TestFeelEngineFactory extends FeelEngineFactoryImpl {
+
+    public FeelEngine createInstance() {
+      //Only needed for making this unit test easier...
+      FeelEngineCustomFunctionTest.feelEngine = super.createInstance();
+      return FeelEngineCustomFunctionTest.feelEngine;
+    }
+
+    @Override
+    protected List<FeelToJuelFunctionTransformer> getFunctionTransformers() {
+      //Adding the custom extensions here -> The details how to add where and when is hidden in the Factory itself.
+      List<FeelToJuelFunctionTransformer> functionTransformers = new ArrayList<FeelToJuelFunctionTransformer>(2);
+      functionTransformers.add(new StartsWithFunctionTransformer());
+      functionTransformers.add(new EndsWithFunctionTransformer());
+      return functionTransformers;
+    }
+  }
 }

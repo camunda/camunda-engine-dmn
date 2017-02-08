@@ -15,43 +15,31 @@ package org.camunda.bpm.dmn.feel.impl.juel.transform;
 
 import java.lang.reflect.Method;
 
-public interface FeelToJuelFunctionTransformer {
+public abstract class FeelToJuelFunctionTransformer implements FeelToJuelTransformer {
 
-  /**
-   * Test if an expression can be transformed by this transformer.
-   *
-   * @param feelExpression the FEEL expression to transform
-   * @return true if the expression can be transformed by this transformer, false otherwise
-   */
-  boolean canTransform(String feelExpression);
-
-  /**
-   * Transform the FEEL expression to a JUEL expression.
-   *
-   * @param transform the {@link FeelToJuelTransform} to use for further transforms
-   * @param feelExpression the FEEL expression to transform
-   * @param inputName the variable name of the input variable to test against
-   * @return the resulting JUEL expression
-   */
-  String transform(FeelToJuelTransform transform, String feelExpression, String inputName);
+  protected Method method = null;
 
   /**
    * Get the prefix for this method.
    * @return string prefix
      */
-  String getPrefix();
+  public String getPrefix() {
+    return "";
+  }
 
   /**
    * Get the name of the method i.e. startWith
    * @return string name of method
      */
-  String getLocalName();
+  public abstract String getLocalName();
 
   /**
    * Get the method object to call once the FEELEngine matched to this class.
    * Note: The implementer is encouraged to get the Method reference only once and not within every call to getMethod()
    * @return the method reference
      */
-  Method getMethod();
+  public Method getMethod() {
+    return method;
+  }
 
 }

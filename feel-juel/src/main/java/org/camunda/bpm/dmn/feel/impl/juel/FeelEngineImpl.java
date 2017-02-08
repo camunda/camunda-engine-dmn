@@ -22,6 +22,7 @@ import org.camunda.bpm.dmn.feel.impl.FeelEngine;
 import org.camunda.bpm.dmn.feel.impl.juel.el.ElContextFactory;
 import org.camunda.bpm.dmn.feel.impl.juel.transform.FeelToJuelTransform;
 import org.camunda.bpm.dmn.feel.impl.juel.el.FeelFunctionMapper;
+import org.camunda.bpm.dmn.feel.impl.juel.transform.FeelToJuelTransformer;
 import org.camunda.bpm.engine.variable.context.VariableContext;
 import org.camunda.commons.utils.cache.Cache;
 
@@ -104,17 +105,6 @@ public class FeelEngineImpl implements FeelEngine {
       transformExpressionCache.put(cacheKey, juelExpression);
     }
     return juelExpression;
-  }
-
-  @Override
-  public void addCustomFunction(String localName, Method method) {
-    addCustomFunction("", localName, method);
-  }
-
-  @Override
-  public void addCustomFunction(String prefix, String localName, Method method) {
-    FeelFunctionMapper.addMethod(method);
-    elContextFactory.addCustomFunction(prefix, localName, method);
   }
 
 }
