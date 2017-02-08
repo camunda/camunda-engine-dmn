@@ -15,11 +15,9 @@ package org.camunda.bpm.dmn.feel.impl.juel.transform;
 
 import org.camunda.bpm.dmn.feel.impl.juel.FeelEngineLogger;
 import org.camunda.bpm.dmn.feel.impl.juel.FeelLogger;
-import org.reflections.Reflections;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class FeelToJuelTransformImpl implements FeelToJuelTransform {
 
@@ -33,25 +31,6 @@ public class FeelToJuelTransformImpl implements FeelToJuelTransform {
   public static final FeelToJuelTransformer EQUAL_TRANSFORMER = new EqualTransformer();
   public static final FeelToJuelTransformer ENDPOINT_TRANSFORMER = new EndpointTransformer();
   public static final List<FeelToJuelTransformer> FUNCTION_TRANSFORMERS = new ArrayList<FeelToJuelTransformer>();
-
-  public FeelToJuelTransformImpl() {
-    super();
-
-    //Get all annotated Function Transformers via Annotation
-    Reflections reflections = new Reflections();
-    Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(FeelFunctionTransformer.class);
-
-    for (Class transformerClass : annotated) {
-      try {
-        Object object = transformerClass.getConstructors()[0].newInstance();
-        if (object instanceof FeelToJuelTransformer){
-          FUNCTION_TRANSFORMERS.add((FeelToJuelTransformer) object);
-        }
-      } catch (Exception ex) {
-        throw LOG.unknownException(ex);
-      }
-    }
-  }
 
   public String transformSimpleUnaryTests(String simpleUnaryTests, String inputName) {
     simpleUnaryTests = simpleUnaryTests.trim();
@@ -71,6 +50,11 @@ public class FeelToJuelTransformImpl implements FeelToJuelTransform {
 
   public String transformSimplePositiveUnaryTests(String simplePositiveUnaryTests, String inputName) {
     simplePositiveUnaryTests = simplePositiveUnaryTests.trim();
+    for (FeelToJuelTransformer functionTransformer : FUNCTION_TRANSFORMERS) {
+      if (functionTransformer.canTransform(simplePositiveUnaryTests)) {
+        return functionTransformer.transform(this, simplePositiveUnaryTests, inputName);
+      }
+    }
     if (LIST_TRANSFORMER.canTransform(simplePositiveUnaryTests)) {
       return LIST_TRANSFORMER.transform(this, simplePositiveUnaryTests, inputName);
     }
@@ -101,4 +85,8 @@ public class FeelToJuelTransformImpl implements FeelToJuelTransform {
     return ENDPOINT_TRANSFORMER.transform(this, endpoint, inputName);
   }
 
+  @Override
+  public void addFunctionTransformer(FeelToJuelTransformer feelToJuelTransformer) {
+    FUNCTION_TRANSFORMERS.add(feelToJuelTransformer);
+  }
 }

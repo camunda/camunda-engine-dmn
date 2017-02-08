@@ -13,8 +13,6 @@
 
 package org.camunda.bpm.dmn.feel.impl.juel.transform;
 
-import java.lang.reflect.Method;
-
 public interface FeelToJuelTransformer {
 
   /**

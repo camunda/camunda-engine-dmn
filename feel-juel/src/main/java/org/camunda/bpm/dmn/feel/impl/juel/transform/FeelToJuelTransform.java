@@ -53,7 +53,7 @@ public interface FeelToJuelTransform {
 
   /**
    * Add a new FellToJuelTransformer for implementing custom evaluation methods.
-   * @param feelToJuelTransformer The function transformer to add.
+   * @param feelToJuelTransformer The custom
    */
   void addFunctionTransformer(FeelToJuelTransformer feelToJuelTransformer);
 
