@@ -26,6 +26,7 @@ import org.camunda.bpm.dmn.engine.DmnDecisionResult;
 import org.camunda.bpm.dmn.engine.delegate.DmnDecisionEvaluationListener;
 import org.camunda.bpm.dmn.engine.delegate.DmnDecisionLogicEvaluationEvent;
 import org.camunda.bpm.dmn.engine.impl.delegate.DmnDecisionEvaluationEventImpl;
+import org.camunda.bpm.dmn.engine.impl.evaluation.DecisionContextEvaluationHandler;
 import org.camunda.bpm.dmn.engine.impl.evaluation.DecisionLiteralExpressionEvaluationHandler;
 import org.camunda.bpm.dmn.engine.impl.evaluation.DecisionTableEvaluationHandler;
 import org.camunda.bpm.dmn.engine.impl.evaluation.DmnDecisionLogicEvaluationHandler;
@@ -55,6 +56,7 @@ public class DefaultDmnDecisionContext {
     evaluationHandlers = new HashMap<Class<? extends DmnDecisionLogic>, DmnDecisionLogicEvaluationHandler>();
     evaluationHandlers.put(DmnDecisionTableImpl.class, new DecisionTableEvaluationHandler(configuration));
     evaluationHandlers.put(DmnDecisionLiteralExpressionImpl.class, new DecisionLiteralExpressionEvaluationHandler(configuration));
+    evaluationHandlers.put(DmnDecisionContextImpl.class, new DecisionContextEvaluationHandler(configuration));
   }
 
   /**

@@ -166,5 +166,33 @@ public class DmnTransformLogger extends DmnLogger {
         "The decision '{}' must have an 'variable' element if it contains a literal expression.",
         decisionId));
   }
+  
+  public DmnTransformException contextEntryVariableIsMissing(String decisionId) {
+    return new DmnTransformException(exceptionMessage(
+        "019",
+        "All context entries of the decision '{}' must have an 'variable' element.",
+        decisionId));
+  }
+
+  public void contextEntryWithoutExpression(Decision decision) {
+    logInfo(
+        "020",
+        "The context entry of decision '{}' has no expression and will be ignored.", decision.getName()
+      );
+  }
+
+  public void contextEntryExpressionTypeNotSupported(Expression expression, Decision decision) {
+    logInfo(
+        "021",
+        "The expression type '{}' of the decision '{}' context entry is not supported. The context entry will be ignored.", expression.getClass().getSimpleName(), decision.getName()
+      );
+  }
+  
+  public void contextWithoutEntries(Decision decision) {
+    logInfo(
+        "022",
+        "The context of the decision '{}' has no entries and will be ignored.", decision.getName()
+      );
+  }
 
 }

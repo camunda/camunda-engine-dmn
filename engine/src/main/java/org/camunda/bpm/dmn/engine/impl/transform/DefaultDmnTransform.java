@@ -27,6 +27,8 @@ import java.util.Set;
 
 import org.camunda.bpm.dmn.engine.DmnDecision;
 import org.camunda.bpm.dmn.engine.DmnDecisionRequirementsGraph;
+import org.camunda.bpm.dmn.engine.impl.DmnDecisionContextEntryImpl;
+import org.camunda.bpm.dmn.engine.impl.DmnDecisionContextImpl;
 import org.camunda.bpm.dmn.engine.impl.DmnDecisionImpl;
 import org.camunda.bpm.dmn.engine.impl.DmnDecisionLiteralExpressionImpl;
 import org.camunda.bpm.dmn.engine.impl.DmnDecisionRequirementsGraphImpl;
@@ -48,6 +50,8 @@ import org.camunda.bpm.dmn.engine.impl.spi.type.DmnDataTypeTransformerRegistry;
 import org.camunda.bpm.model.dmn.Dmn;
 import org.camunda.bpm.model.dmn.DmnModelException;
 import org.camunda.bpm.model.dmn.DmnModelInstance;
+import org.camunda.bpm.model.dmn.instance.Context;
+import org.camunda.bpm.model.dmn.instance.ContextEntry;
 import org.camunda.bpm.model.dmn.instance.Decision;
 import org.camunda.bpm.model.dmn.instance.DecisionTable;
 import org.camunda.bpm.model.dmn.instance.Definitions;
@@ -272,6 +276,10 @@ public class DefaultDmnTransform implements DmnTransform, DmnElementTransformCon
       DmnDecisionLiteralExpressionImpl dmnDecisionLiteralExpression = transformDecisionLiteralExpression(decision, (LiteralExpression) expression);
       dmnDecision.setDecisionLogic(dmnDecisionLiteralExpression);
 
+    } else if (expression instanceof Context) {
+    	DmnDecisionContextImpl dmnDecisionContext = transformContext(decision, (Context) expression);
+    	dmnDecision.setDecisionLogic(dmnDecisionContext);
+      
     } else {
       LOG.decisionTypeNotSupported(expression, decision);
       return null;
@@ -439,6 +447,68 @@ public class DefaultDmnTransform implements DmnTransform, DmnElementTransformCon
   protected DmnVariableImpl transformVariable(Variable variable) {
     DmnElementTransformHandler<Variable, DmnVariableImpl> handler = handlerRegistry.getHandler(Variable.class);
     return handler.handleElement(this, variable);
+  }
+  
+  protected DmnDecisionContextImpl transformContext(Decision decision, Context context) {
+    DmnDecisionContextImpl dmnDecisionContext = new DmnDecisionContextImpl();
+
+    Variable variable = decision.getVariable();
+    if (variable == null) {
+      throw LOG.decisionVariableIsMissing(decision.getId());
+    }
+
+    DmnVariableImpl dmnVariable = transformVariable(variable);
+    dmnDecisionContext.setVariable(dmnVariable);
+    
+    List<DmnDecisionContextEntryImpl> dmnContextEntries = new ArrayList<DmnDecisionContextEntryImpl>();
+    for(ContextEntry contextEntry : context.getContextEntries()) {
+      
+      DmnDecisionContextEntryImpl dmnContextEntry = transformContextEntry(decision, contextEntry);
+      dmnContextEntries.add(dmnContextEntry);
+    }
+    dmnDecisionContext.setContextEntries(dmnContextEntries);
+    
+    if (dmnContextEntries.isEmpty())
+    {
+      LOG.contextWithoutEntries(decision);
+    }
+
+    return dmnDecisionContext;
+  }
+  
+  protected DmnDecisionContextEntryImpl transformContextEntry(Decision decision, ContextEntry contextEntry) {
+    DmnDecisionContextEntryImpl dmnContextEntry = new DmnDecisionContextEntryImpl();
+
+    Variable variable = contextEntry.getVariable();
+    if (variable == null) {
+      throw LOG.decisionVariableIsMissing(decision.getId());
+    }
+
+    DmnVariableImpl dmnVariable = transformVariable(variable);
+    dmnContextEntry.setVariable(dmnVariable);
+    
+    Expression expression = contextEntry.getExpression();
+    if (expression == null) {
+      LOG.contextEntryWithoutExpression(decision);
+      return null;
+    }
+
+    if (expression instanceof LiteralExpression) {
+      DmnExpressionImpl dmnLiteralExpression = transformLiteralExpression((LiteralExpression) expression);
+      dmnContextEntry.setExpression(dmnLiteralExpression);
+
+      // TODO support context entry with inner context
+      
+//    } else if (expression instanceof Context) {
+//      DmnDecisionContextImpl dmnDecisionContext = transformContext(decision, (Context) expression);
+//      dmnContextEntry.setExpression(dmnDecisionContext);
+      
+    } else {
+      LOG.contextEntryExpressionTypeNotSupported(expression, decision);
+      return null;
+    }
+    
+    return dmnContextEntry;
   }
 
   // listeners ////////////////////////////////////////////////////////////////

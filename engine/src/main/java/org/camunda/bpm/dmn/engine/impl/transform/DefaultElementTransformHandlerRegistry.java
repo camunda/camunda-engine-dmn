@@ -16,8 +16,10 @@ package org.camunda.bpm.dmn.engine.impl.transform;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.camunda.bpm.dmn.engine.impl.DmnDecisionContextImpl;
 import org.camunda.bpm.dmn.engine.impl.spi.transform.DmnElementTransformHandler;
 import org.camunda.bpm.dmn.engine.impl.spi.transform.DmnElementTransformHandlerRegistry;
+import org.camunda.bpm.model.dmn.instance.Context;
 import org.camunda.bpm.model.dmn.instance.Decision;
 import org.camunda.bpm.model.dmn.instance.DecisionTable;
 import org.camunda.bpm.model.dmn.instance.Definitions;
@@ -51,7 +53,7 @@ public class DefaultElementTransformHandlerRegistry implements DmnElementTransfo
 
     handlers.put(LiteralExpression.class, new DmnLiternalExpressionTransformHandler());
     handlers.put(Variable.class, new DmnVariableTransformHandler());
-
+        
     return handlers;
   }
 
