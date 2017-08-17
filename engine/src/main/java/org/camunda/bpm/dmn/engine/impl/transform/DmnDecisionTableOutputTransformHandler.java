@@ -46,14 +46,19 @@ public class DmnDecisionTableOutputTransformHandler implements DmnElementTransfo
   }
 
   private List<String> getOutputValues(OutputValues outputValues) {
-    // assume that the output values are values separated by ','
-    final String values = outputValues.getText().getTextContent();
-    String[] arr = values.split(",");
     List<String> valueList = new ArrayList<String>();
-    for (String v : arr)
+
+    if (outputValues != null)
     {
-      valueList.add(v.trim());
+      final String values = outputValues.getText().getTextContent();
+      // assume that the output values are values separated by ','
+      String[] arr = values.split(",");
+      for (String v : arr)
+      {
+        valueList.add(v.trim());
+      }
     }
+    
     return valueList;
   }
 
