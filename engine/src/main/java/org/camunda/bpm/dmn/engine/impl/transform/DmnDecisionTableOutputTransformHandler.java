@@ -13,6 +13,9 @@
 
 package org.camunda.bpm.dmn.engine.impl.transform;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.camunda.bpm.dmn.engine.impl.DmnDecisionTableOutputImpl;
 import org.camunda.bpm.dmn.engine.impl.spi.transform.DmnElementTransformContext;
 import org.camunda.bpm.dmn.engine.impl.spi.transform.DmnElementTransformHandler;
@@ -21,9 +24,11 @@ import org.camunda.bpm.dmn.engine.impl.spi.type.DmnTypeDefinition;
 import org.camunda.bpm.dmn.engine.impl.type.DefaultTypeDefinition;
 import org.camunda.bpm.dmn.engine.impl.type.DmnTypeDefinitionImpl;
 import org.camunda.bpm.model.dmn.instance.Output;
+import org.camunda.bpm.model.dmn.instance.OutputValues;
 
 public class DmnDecisionTableOutputTransformHandler implements DmnElementTransformHandler<Output, DmnDecisionTableOutputImpl> {
 
+  @Override
   public DmnDecisionTableOutputImpl handleElement(DmnElementTransformContext context, Output output) {
     return createFromOutput(context, output);
   }
@@ -35,8 +40,21 @@ public class DmnDecisionTableOutputTransformHandler implements DmnElementTransfo
     decisionTableOutput.setName(output.getLabel());
     decisionTableOutput.setOutputName(output.getName());
     decisionTableOutput.setTypeDefinition(getTypeDefinition(context, output));
-
+    decisionTableOutput.setOutputValues(getOutputValues(output.getOutputValues()));
+    
     return decisionTableOutput;
+  }
+
+  private List<String> getOutputValues(OutputValues outputValues) {
+    // assume that the output values are values separated by ','
+    final String values = outputValues.getText().getTextContent();
+    String[] arr = values.split(",");
+    List<String> valueList = new ArrayList<String>();
+    for (String v : arr)
+    {
+      valueList.add(v.trim());
+    }
+    return valueList;
   }
 
   protected DmnDecisionTableOutputImpl createDmnElement(DmnElementTransformContext context, Output output) {
