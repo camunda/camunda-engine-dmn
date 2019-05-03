@@ -24,7 +24,7 @@ public class JuelElProviderTest {
     }
 
     @Test
-    public void testJuelResolvesNestedProperty() {
+    public void testJuelDoesNotShadowProperty() {
       ElProvider elProvider = createJuelElProvider();
       ElExpression elExpression = elProvider.createExpression("${a.b}");
 
