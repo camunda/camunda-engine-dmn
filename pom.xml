@@ -49,8 +49,8 @@
       </dependency>
 
       <dependency>
-        <groupId>org.camunda.bpm</groupId>
-        <artifactId>camunda-typed-value</artifactId>
+        <groupId>org.camunda.commons</groupId>
+        <artifactId>camunda-commons-typed-values</artifactId>
         <version>${project.version}</version>
       </dependency>
 
